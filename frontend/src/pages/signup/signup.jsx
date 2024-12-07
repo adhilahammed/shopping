@@ -4,6 +4,7 @@ import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
 import { useForm, useWatch } from "react-hook-form";
 import { useNavigate } from "react-router";
+import { toast } from "react-toastify";
 
 export const Signup = () => {
   const [passwordError, setError] = useState("");
@@ -49,13 +50,14 @@ export const Signup = () => {
     {
       onSuccess: (data) => {
         console.log("User created successfully:", data);
-        alert("User created successfully!");
+        toast.success("Signup Successful");
         reset(); // Reset the form on success
+
         navigate("/login");
       },
       onError: (error) => {
         console.error("Error creating user:", error);
-        alert("Failed to create user. Please try again.");
+        toast.error("Failed to create user. Please try again.");
       },
     }
   );
@@ -133,6 +135,7 @@ export const Signup = () => {
               id="password"
               name="password"
               placeholder="Enter your password"
+              autoComplete=""
               className="mt-1 block w-full rounded-md border-gray-300 border  box-border shadow-sm focus:ring-blue-600 focus:border-blue-600 sm:text-sm p-2"
             />
 
@@ -159,6 +162,7 @@ export const Signup = () => {
               id="confirmPassword"
               name="confirmPassword"
               placeholder="Confirm your password"
+              autoComplete=""
               className="mt-1 block w-full  border border-gray-300 rounded-md box-border shadow-sm focus:ring-blue-800 focus:border-blue-800 sm:text-sm p-2"
             />
             {errors.confirmPassword && (

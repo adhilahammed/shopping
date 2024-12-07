@@ -56,14 +56,19 @@ authRouter.post("/login", async (req, res) => {
     console.log(loginResponse, "login");
 
     const token = jwt.sign(
-      { email: loginResponse.email }, // Payload
+      { email: loginResponse.email, userId: loginResponse.id }, // Payload
       process.env.JWT_SECRET, // Secret key
       { expiresIn: process.env.JWT_EXPIRES_IN } // Token expiry
     );
 
     console.log(token, "rrrrrrrrr");
 
-    res.json(token);
+    const response = {
+      token,
+      userId: loginResponse?.id,
+    };
+
+    res.json(response);
   } catch (error) {
     res.json(error);
   }

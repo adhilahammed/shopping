@@ -18,10 +18,26 @@ model User {
   email       String   @unique
   name        String?
   password    String
+  ratings     Rating[]
 }
 
 model Product {
   id          Int      @id @default(autoincrement())
   name        String   
   image       String
+  color       String
+  price       Int
+  reviews     Rating[]
+}
+
+model Rating {
+  id          Int      @id @default(autoincrement())
+  rateCount   Int
+  review      String
+  productId   Int
+  product     Product  @relation(fields: [productId],references: [id])
+  userId      Int
+  user        User     @relation(fields:[userId],references: [id])
+
+  @@unique([productId, userId])
 }

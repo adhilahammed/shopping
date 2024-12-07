@@ -2,155 +2,204 @@ import React from "react";
 import { Ratings } from "../../components/ratings/Ratings";
 import { Reviews } from "../../components/reviews/Reviews";
 import Popup from "../../components/popup/popup";
+import { useNavigate, useParams } from "react-router";
+import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
+import { useUserSessionStore } from "../../store/userSession";
+import LoginAlert from "../../components/popup/authalert";
 
+const ratings = true;
 
+const product = {
+  name: "Model Name",
+  color: "color",
+  price: "233",
+};
 
+export const SingleProductView = () => {
+  const params = useParams();
+  const userSession = useUserSessionStore((state) => state.session);
 
-export const SingleProductView = (
+  const [pop, setPop] = React.useState(false);
+  const [alert, setLoginAlert] = React.useState(false);
 
-) => {
- 
- const [pop,setPop]=React.useState<boolean>(false)
-//   const [active, setActive] = React.useState<number>(0);
+  console.log(userSession?.userId, "userSession");
 
-  
+  const { data, refetch } = useQuery({
+    queryKey: ["products"],
+    queryFn: async () => {
+      const response = await axios.get(
+        `http://localhost:3000/products/${params.id}`
+      );
+      return response.data;
+    },
+  });
+  console.log(data?.allProducts?.reviews);
+  const filter = data?.allProducts?.reviews?.find((item) => {
+    return item?.userId === userSession?.userId;
+  });
+  console.log(filter);
 
+  const buttonClick = () => {
+    if (userSession?.userId) {
+      setPop(true);
+    } else {
+      setLoginAlert(true);
+    }
+  };
+
+  // const filtered = data?.allProducts?.reviews
+  //   .filter((item) => {
+  //     return item?.userId === userSession?.userId;
+  //   })
 
   return (
     <>
-    {pop&&<Popup/>}
-    
-    <div className="flex sm:w-auto lg:justify-center flex-wrap lg:flex-nowrap py-6 lg:gap-9 md:gap-4 mx-10">
-      <div className="grid grid-cols-1 md:w-5/12 h-fit">
-        {/* <text className="font-semibold">{service?.name ?? "Service name"}</text> */}
-        <div className="pr-6 md:pr-0">
-          <p className="py-4 overflow-hidden">
-            {/* {service?.shortDescription ?? "Service description"} */}
-          </p>
-          <div className="border w-64 md:w-full">
-     
-              <div className="flex w-full">
-           
-                  <>
-                 <img src="https://rukminim2.flixcart.com/image/832/832/xif0q/backpack/l/z/c/-original-imah4rnc92jbn8nt.jpeg?q=70" alt="" />
+      {alert && <LoginAlert />}
+      {pop && (
+        <Popup
+          setPop={setPop}
+          reviews={filter}
+          productId={data?.allProducts?.id}
+          userId={userSession?.userId}
+          token={userSession?.token}
+          refetch={refetch}
+        />
+      )}
+
+      <div className="flex sm:w-auto lg:justify-center flex-wrap lg:flex-nowrap  lg:gap-9 md:gap-4 mx-10 ">
+        <div className="grid grid-cols-1 md:w-5/12 h-fit">
+          {/* <text className="font-semibold">{service?.name ?? "Service name"}</text> */}
+          <div className="pr-6 md:pr-0">
+            <p className="py-4 overflow-hidden">
+              {/* {service?.shortDescription ?? "Service description"} */}
+            </p>
+            <div className="w-64 md:w-full">
+              <div className="flex w-full sm:h-[80vh]">
+                <>
+                  <img src={`${data?.allProducts?.image}`} alt="" />
                   <img src="" alt="" />
-                   
-                      {/* {imageBuffer.map((item, index) => (
-                        <SwiperSlide key={index}>
-                          <div className=" w-full">
-                            <UploadImage
-                              disabled={true}
-                              imageId={item}
-                              imgUrlGenerator={(id: any) =>
-                                `${configUrl.FILEGET_URL}/${id}`
-                              }
-                            />
-                          </div>
-                        </SwiperSlide>
-                      ))} */}
-                 
-                  </>
-            
+                </>
               </div>
-           
 
-            <div className="my-3 w-full">
-              {/* <Swiper
-                pagination={true}
-                slidesPerView={4}
-                freeMode={true}
-                modules={[Controller]}
-                onSwiper={setSecondSwiper}
-                controller={{ control: firstSwiper }}
-              >
-                {imageBuffer.map((item, index) => (
-                  <SwiperSlide
-                    key={index}
-                    onClick={() => {
-                      firstSwiper?.slideTo(index);
-                    }}
-                  >
-                    <div
-                      className={`mr-1.5   ${
-                        active === index
-                          ? "border-2 border-primary object-scale-down"
-                          : " "
-                      }`}
-                    >
-                      <UploadImage
-                        disabled={true}
-                        imageId={item}
-                        imgUrlGenerator={(id: any) =>
-                          `${configUrl.FILEGET_URL}/${id}`
-                        }
-                      />
-                    </div>
-                  </SwiperSlide>
-                ))}
-              </Swiper> */}
+              <div className="my-3 w-full"></div>
             </div>
           </div>
         </div>
-      </div>
-      <div className="md:w-6/12 lg:w-7/12 lg:pl-2 ">
-        <div className="h-4 sm:h-20"></div>
-        <div className="flex flex-col gap-4">
-          <div>
-         
-              <div className="rounded-full border border-slate-300 text-slate-500 inline-block px-1.5 py-1 text-sm ">
+        <div className="md:w-6/12 lg:w-7/12 lg:pl-2 ">
+          <div className="h-4 sm:h-20"></div>
+          <div className="flex flex-col gap-4">
+            <div>
+              {/* <div className="rounded-full border border-slate-300 text-slate-500 inline-block px-1.5 py-1 text-sm ">
                 No ratings
-              </div>
-          
-              <p
-                className={`px-2 rounded-l-2xl gap-1 text-sm items-center flex rounded-r-2xl w-14`}
-              >
-                {
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img src="/images/star.svg" className="h-3 w-3" alt="" />
-                }
-                <text>
-                    {/* {service?.averageRating?.toFixed(1)} */}5
-                    </text>
-              </p>
-         
-          </div>
-          <div className="flex">
-            ddsdfasf
-            {/* <LabelItem data={description} /> */}
-          </div>
-          <div>
-            {/* {addtionalInfo} */}ddfdsfa
+              </div> */}
+              {ratings && (
+                <p
+                  className={`${
+                    Number(5) > 4
+                      ? "bg-[#28610D] text-white"
+                      : "bg-red-600 text-white"
+                  }  px-2 rounded-l-2xl gap-1 text-sm items-center flex rounded-r-2xl w-14`}
+                >
+                  <span className="">{4.5}</span>
+                  <div>
+                    {
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <span className="h-3 w-3">&#11088;</span>
+                      // <img src="/images/star.svg" className="h-3 w-3" alt="" />
+                    }
+                  </div>
+                </p>
+              )}
             </div>
-          <div className="self-start py-2">
-           <button>ddsfdsaf</button>
-          </div >
-
-
-         
-    <div className="flex justify-between">
-<Ratings
-
-                averageRating={1}
-                numberOfRatings={1}
-                rating={1}
-              />
-              <div>
-                <button onClick={()=>setPop(true)}>Rate  now</button>
+            <div className="">
+              <div
+                style={{
+                  display: "flex",
+                  gap: "20px",
+                }}
+              >
+                <div
+                  style={{
+                    lineHeight: "30px",
+                  }}
+                >
+                  <p>Model Name</p>
+                  <p>Color</p>
+                  <p>Specifications</p>
+                </div>
+                <div
+                  style={{
+                    lineHeight: "30px",
+                  }}
+                >
+                  <p>{data?.allProducts?.name}</p>
+                  <p>Color</p>
+                  <p>Color</p>
+                </div>
               </div>
-    </div>
-              
-         
-        </div>
-        
-                <Reviews
-                  rating={2}
-                  review={`good`}
-                  name={`sudessh`}
-                  ratedAt={Date.now()}
+              {/* <LabelItem data={description} /> */}
+            </div>
+          </div>
+
+          <div className="min-h-[50vh] flex flex-col justify-end ">
+            <div
+              className=""
+              style={{
+                display: "flex",
+
+                justifyContent: `${
+                  data?.allProducts?.reviews?.length === 0
+                    ? `flex-end`
+                    : `space-between`
+                }`,
+              }}
+            >
+              {data?.allProducts?.reviews?.length !== 0 && (
+                <Ratings
+                  averageRating={data?.averageRating}
+                  numberOfRatings={data?.totalRatingsCount}
+                  // rating={1}
                 />
-         
+              )}
+
+              <div>
+                <button
+                  onClick={buttonClick}
+                  style={{
+                    backgroundColor: " #1e3a8a",
+                    color: "#ffffff",
+                    padding: "5px 10px",
+                    borderRadius: "5px",
+                  }}
+                >
+                  Rate Now
+                </button>
+              </div>
+            </div>
+
+            <div className="h-[30vh] overflow-y-auto ">
+              {data?.allProducts?.reviews?.map((item) => (
+                <>
+                  <Reviews
+                    rating={item?.rateCount}
+                    review={item?.review}
+                    name={`sudessh`}
+                    ratedAt={Date.now()}
+                  />
+                </>
+              ))}
+            </div>
+          </div>
+
+          {/* <Reviews
+            rating={2}
+            review={`good`}
+            name={`sudessh`}
+            ratedAt={Date.now()}
+          /> */}
+        </div>
       </div>
-    </div>
     </>
   );
 };

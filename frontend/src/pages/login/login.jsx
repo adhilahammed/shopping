@@ -3,7 +3,7 @@ import axios from "axios";
 import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "react-router";
 import { useUserSessionStore } from "../../store/userSession";
-
+import { toast } from "react-toastify";
 
 export const Login = () => {
   const {
@@ -16,30 +16,31 @@ export const Login = () => {
   const setUserSession = useUserSessionStore((state) => state.setSession);
   const navigate = useNavigate();
 
-  const mutation = useMutation(
-    async (newUser) => {
-      const response = await axios.post(
-        "http://localhost:3000/user/login",
-        newUser
-      );
-      return response.data;
+  const createUser = async (newUser) => {
+    const response = await axios.post(
+      "http://localhost:3000/user/login",
+      newUser
+    );
+    return response.data;
+  };
+
+  const mutation = useMutation(createUser, {
+    onSuccess: (data) => {
+      console.log("User created successfully:", data);
+      // alert('User created successfully!');
+      reset(); // Reset the form on success
+      setUserSession({
+        token: data.token,
+        userId: data.userId,
+      });
+      toast.success("login successful");
+      navigate("/");
     },
-    {
-      onSuccess: (data) => {
-        console.log("User created successfully:", data);
-        // alert('User created successfully!');
-        reset(); // Reset the form on success
-        setUserSession({
-          token: data,
-        });
-        navigate("/");
-      },
-      onError: (error) => {
-        console.error("Error creating user:", error);
-        alert("Failed to create user. Please try again.");
-      },
-    }
-  );
+    onError: (error) => {
+      console.error("Error creating user:", error);
+      alert("Failed to create user. Please try again.");
+    },
+  });
 
   const onSubmit = (data) => {
     console.log("hai");
@@ -90,6 +91,7 @@ export const Login = () => {
               id="password"
               name="password"
               placeholder="Enter your password"
+              autoComplete=""
               className="mt-1 block w-full rounded-md border-gray-300 border  box-border shadow-sm focus:ring-blue-600 focus:border-blue-600 sm:text-sm p-2"
             />
             {errors.password && (
