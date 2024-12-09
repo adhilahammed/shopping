@@ -42,7 +42,7 @@ export const Signup = () => {
   const mutation = useMutation(
     async (newUser) => {
       const response = await axios.post(
-        "http://localhost:3000/user/signup",
+        `https://${import.meta.env.VITE_API}/user/signup`,
         newUser
       );
       return response.data;

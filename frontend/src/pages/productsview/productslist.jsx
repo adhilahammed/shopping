@@ -12,7 +12,9 @@ export default function ProductList() {
   const { data } = useQuery({
     queryKey: ["product"],
     queryFn: async () => {
-      const response = await axios.get("http://localhost:3000/products");
+      const response = await axios.get(
+        `https://${import.meta.env.VITE_API}/products`
+      );
       return response.data;
     },
   });

@@ -20,7 +20,7 @@ const Popup = ({ setPop, reviews, productId, userId, refetch, token }) => {
 
   const createRating = async (newRating) => {
     const response = await axios.post(
-      "http://localhost:3000/products/rating",
+      `https://${import.meta.env.VITE_API}/products/rating`,
       newRating,
       {
         headers: {
@@ -34,7 +34,7 @@ const Popup = ({ setPop, reviews, productId, userId, refetch, token }) => {
 
   const updateRating = async (updatedRating) => {
     const response = await axios.put(
-      "http://localhost:3000/products/rating",
+      `https://${import.meta.env.VITE_API}/products/rating`,
       updatedRating,
       {
         headers: {

@@ -29,7 +29,7 @@ export const SingleProductView = () => {
     queryKey: ["products"],
     queryFn: async () => {
       const response = await axios.get(
-        `http://localhost:3000/products/${params.id}`
+        `https://${import.meta.env.VITE_API}/products/${params.id}`
       );
       return response.data;
     },
@@ -101,7 +101,7 @@ export const SingleProductView = () => {
                       : "bg-red-600 text-white"
                   }  px-2 rounded-l-2xl gap-1 text-sm items-center flex rounded-r-2xl w-14`}
                 >
-                  <span className="">{4.5}</span>
+                  <span className="">{data?.averageRating}</span>
                   <div>
                     {
                       // eslint-disable-next-line @next/next/no-img-element
@@ -134,8 +134,8 @@ export const SingleProductView = () => {
                   }}
                 >
                   <p>{data?.allProducts?.name}</p>
-                  <p>Color</p>
-                  <p>Color</p>
+                  <p>{data?.allProducts?.color}</p>
+                  <p>{data?.allProducts?.price}</p>
                 </div>
               </div>
               {/* <LabelItem data={description} /> */}
